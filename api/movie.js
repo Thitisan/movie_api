@@ -14,13 +14,13 @@ router.get('/', async (req, res) => {  // ใช้ async function
     let movieTitle = req.query.movieTitle
 
     if(rateId && movieTitle){
-      rows = await db('mm_movies').where('rate_id','=',rateId).where('movie_title','like',`%${movieTitle}%`)
+      rows = await db('mm_movies as m').join('mm_rating as r','m.rate_id','r.rate_id').where('m.rate_id','=',rateId).where('m.movie_title','like',`%${movieTitle}%`)
     }else if(rateId) {
-      rows = await db('mm_movies').where('rate_id','=',rateId)
+      rows = await db('mm_movies as m').join('mm_rating as r','m.rate_id','r.rate_id').where('m.rate_id','=',rateId)
     }else if(movieTitle) {
-      rows = await db('mm_movies').where('movie_title','like',`%${movieTitle}%`)
+      rows = await db('mm_movies as m').join('mm_rating as r','m.rate_id','r.rate_id').where('m.movie_title','like',`%${movieTitle}%`)
     }else {
-      rows = await db('mm_movies as m').join('mm_genres as g',knex.raw('ON m.rate_id = g.rate_id'))
+      rows = await db('mm_movies as m').join('mm_rating as r','m.rate_id','r.rate_id')
     }
     res.send({ 
       ok: true,       // ส่ง status 
