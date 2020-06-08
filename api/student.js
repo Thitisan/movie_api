@@ -4,6 +4,25 @@ const router = express.Router()
 module.exports = router
 //     http://localhost:7000/api/student?class=1
 
+
+// http://localhost:8888/api/student // path การเข้าถึง api
+router.get('/', async (req, res) => {  // ใช้ async function
+  try {
+    let db = req.db
+    let rows = await db('student') // ใช้ await เพื่อรอผลรับ
+    if(req.query.class){
+      rows = await db('student').where('class','=',req.query.class)
+    } else {
+      rows = await db('student')
+    }
+    res.send({ 
+      ok: true,       // ส่ง status 
+      student: rows,  // ส่งค่ากลับ
+    })
+  } catch (e) {
+      res.send({ ok: false, error: e.message })
+  }
+})
 // /api/student/list
 router.get('/list', async (req, res) => {
   try {
@@ -19,24 +38,15 @@ router.get('/list', async (req, res) => {
 })
 
 // /api/student/save
+// /api/student/save
 router.post('/save', async (req, res) => {
-  try {
-    // TODO: check
-
-    // INSERT
-    let id = await req.db('student').insert({
-      code: req.body.code || '',
-      firstName: req.body.firstName || '',
-      lastName: req.body.lastName || '',
-    }).then(ids => ids[0])
-
-    res.send({
-      ok: true,
-      id,
-    })
-  } catch (e) {
-    res.send({ ok: false, error: e.message })
-  }
+  let db = req.db
+  // UPDATE student SET fname=?, lname=? WHERE id = 1
+  await db('student').where({id: req.body.id}).update({
+    fname: req.body.fname,
+    lname: req.body.lname
+  })
+  res.send({ok: true})
 })
 
 
@@ -50,28 +60,38 @@ router.get('/id/:id', async (req, res) => {
     student: rows[0] || {},
   })
 })
-//   /api/student/save
-router.post('/save', async (req, res) => {
-  let db = req.db
-  // UPDATE student SET first_name=?, last_name=? WHERE id=7
-  await db('student').where({id: req.body.id}).update({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-  })
-  // let ids = await db('student').insert({
-  //   code: '',
-  //   first_name: '',
-  //   last_name: '',
-  // })
-  // let id = ids[0]
-  res.send({ok: true})
-})
+
 
 router.delete('/:id', function (req, res) {
   req.db('student').where({id: req.params.id}).delete().then(() =>{
     res.send({status: true})
   }).catch(e => res.send({status: false, error: e.message}))
 })
+// /api/student/delete
+router.post('/delete', async (req, res ) => {
+  let db = req.db
+  await db('student').where({id: req.body.id }).delete().then(() =>{
+    res.send({status: true})
+  }).catch(e => res.send({status: false, error: e.message}))
+})
+
+// /api/student/new
+router.post('/new', async (req, res) => {
+  let db = req.db
+  let ids = await db('student').insert({
+    code: req.body.code,
+    fname: req.body.fname,
+    lname: req.body.lname,
+    fType: req.body.ftype,
+    birth: req.body.birth,
+    class: req.body.class
+  })
+  res.send({
+    ok: true,
+    ids: ids
+  })
+})
+
 router.post('/save2', (req, res) => {
   let db = req.db  
   db('t1').insert({}).then(ids => {
