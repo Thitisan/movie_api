@@ -2,17 +2,21 @@ const express = require('express')
 const router = express.Router()
 
 module.exports = router
-//     http://localhost:7000/api/movie?class=1
+//     http://localhost:7000/api/movie
 
 
 // http://localhost:7000/api/movie // path การเข้าถึง api
 router.get('/', async (req, res) => {  // ใช้ async function
   try {
     let db = req.db
-    let rows = await db('mm_movies') // ใช้ await เพื่อรอผลรับ
+    let rows = await db('mm_movies')
+
     let rateId = req.query.rateId
     let movieTitle = req.query.movieTitle
-
+    //join actor ex 
+    // let rows = await db('mm_movies as m')
+    // .join('mm_movies_actor as m_a','m.movie_id','m_a.movie_id')
+    // .join('mm_actor as a','a.actor_id','m_a.actor_id').where('m.movie_id','=','1')
     if(rateId && movieTitle){
       rows = await db('mm_movies as m').join('mm_rating as r','m.rate_id','r.rate_id').where('m.rate_id','=',rateId).where('m.movie_title','like',`%${movieTitle}%`)
     }else if(rateId) {
@@ -78,6 +82,17 @@ router.post('/save', async (req, res) => {
   res.send({ok: true})
 })
 
+// /api/movieId/xxx
+router.get('/movieId/:id', async (req, res) => {
+  let db = req.db
+  let rows = await db('mm_movies as m').join('mm_rating as r','m.rate_id','r.rate_id')
+    .where('m.movieId', '=', req.params.id)
+  res.send({
+    ok: true,
+    movie: rows[0] || {},
+  })
+})
+
 // /api/movie/delete
 router.post('/delete', async (req, res ) => {
   let db = req.db
@@ -85,19 +100,6 @@ router.post('/delete', async (req, res ) => {
     res.send({status: true})
   }).catch(e => res.send({status: false, error: e.message}))
 })
-
-
-// /api/std/id/555
-router.get('/id/:id', async (req, res) => {
-  let db = req.db
-  let rows = await db('mm_movies')
-    .where('movieId', '=', req.params.id)
-  res.send({
-    ok: true,
-    movie: rows[0] || {},
-  })
-})
-
 
 router.delete('/id/:movieId', function (req, res) {
   req.db('mm_movies').where({movieId: req.params.movieId}).delete().then(() =>{

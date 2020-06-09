@@ -6,3 +6,4 @@ module.exports = router
 router.use('/login', require('./login'))
 router.use('/student', require('./student'))
 router.use('/movie', require('./movie'))
+router.use('/movie_actor',require('./movie_actor'))
