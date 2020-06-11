@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     }
   })
 
-  router.get('/movie_genres/:id', async (req, res) => {
+  router.get('/mgenres/:id', async (req, res) => {
     let db = req.db
     let rows = await db('mm_movies as m')
         .join('mm_movies_genres as m_g','m.movie_id','m_g.movie_id')
@@ -24,6 +24,6 @@ router.get('/', async (req, res) => {
         .where('m.movie_id', '=', req.params.id)
     res.send({
       ok: true,
-      movie_genres: rows,
+      movie_genre: rows,
     })
   })
