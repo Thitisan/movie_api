@@ -24,6 +24,6 @@ router.get('/', async (req, res) => {
         .where('m.movie_id', '=', req.params.id)
     res.send({
       ok: true,
-      actor: rows,
+      movie_genres: rows,
     })
   })
