@@ -10,4 +10,4 @@ router.use('/movie_actor',require('./movie_actor'))
 router.use('/movie_genres',require('./movie_genres'))
 router.use('/movie_production',require('./movie_production'))
 router.use('/movie_director',require('./movie_director'))
-
+router.use('/movie_writer',require('./movie_writer'))
