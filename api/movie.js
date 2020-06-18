@@ -34,14 +34,14 @@ router.get('/', async (req, res) => {  // ใช้ async function
       res.send({ ok: false, error: e.message })
   }
 })
-// /api/movie/list
-router.get('/list', async (req, res) => {
+// /api/movie/rate
+router.get('/rate', async (req, res) => {
   try {
-    let rows = await req.db.raw('SELECT * FROM mm_movies')
+    let rows = await req.db("mm_rating")
     
     res.send({
       ok: true,
-      movie: rows,
+      rate: rows,
     })
   } catch (e) {
     res.send({ ok: false, error: e.message })
